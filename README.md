@@ -50,10 +50,10 @@ npm run dev
 
 ### Tech Stack
 
-- Runtime: Node.js 18+
+- Runtime: Node.js
 - Framework: Express.js
-- Database: PostgreSQL 15
-- Cache/Queue: Redis 7
+- Database: PostgreSQL
+- Cache/Queue: Redis
 - ORM: Sequelize
 - Worker: Celery
 

@@ -5,6 +5,7 @@ import cors from "cors";
 
 import errorHandler from "./middleware/errorHandler.js";
 import rateLimiter from "./middleware/rateLimiter.js";
+import { sequelize } from "./models/index.js";
 import logger from "./utils/logger.js";
 import redis from "./config/redis.js";
 import routes from "./api/routes.js";
@@ -35,12 +36,14 @@ app.use((req, _res, next) => {
 // health check endpoint
 app.get("/health", async (req, res) => {
   try {
+    await sequelize.authenticate();
     await redis.ping();
 
     res.json({
       status: "healthy",
       timestamp: new Date().toISOString(),
       service: {
+        database: "connected",
         redis: "connected",
       },
     });

@@ -5,7 +5,7 @@ import {
 } from "winston";
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL || "info",
+  level: process.env.LOG_LEVEL || "debug",
   format: _format.combine(
     _format.timestamp(),
     _format.errors({ stack: true }),

@@ -1,5 +1,6 @@
 import app from "./app.js";
 
+import { sequelize } from "./models/index.js";
 import logger from "./utils/logger.js";
 
 const PORT = process.env.API_PORT || 3000;
@@ -7,7 +8,14 @@ const PORT = process.env.API_PORT || 3000;
 async function startServer() {
   try {
     // test database connection
-    logger.info("Database connection later...");
+    await sequelize.authenticate();
+    logger.info("Database connection established successfully");
+
+    // sync models
+    if (process.env.NODE_ENV !== "production") {
+      await sequelize.sync({ alter: true });
+      logger.info("Database models synchronized");
+    }
 
     // start server
     app.listen(PORT, () => {
