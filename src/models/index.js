@@ -1,21 +1,16 @@
-import dotenv from "dotenv";
-import { Sequelize } from "sequelize";
+import sequelize from "../config/database.js";
+import Product from "./product.js";
+import Order from "./order.js";
 
-import logger from "../utils/logger.js";
-
-dotenv.config();
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  logging:
-    process.env.NODE_ENV === "development" ? (msg) => logger.debug(msg) : false,
-  pool: {
-    max: process.env.NODE_ENV === "production" ? 20 : 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
+// define relations
+Product.hasMany(Order, {
+  foreignKey: "productId",
+  as: "orders",
 });
 
-export { sequelize };
-export default sequelize;
+Order.belongsTo(Product, {
+  foreignKey: "productId",
+  as: "product",
+});
+
+export { sequelize, Product, Order };

@@ -4,9 +4,13 @@ import {
   validateCreateProduct,
   validateUpdateProduct,
   validateProductId,
+  validateCreateOrder,
+  validateOrderId,
+  validateOrderFilters,
   validatePagination,
   handleValidationErrors,
 } from "./validator.js";
+import orderController from "./controllers/orderController.js";
 import productController from "./controllers/productController.js";
 
 const router = express.Router();
@@ -46,6 +50,36 @@ router.delete(
   validateProductId,
   handleValidationErrors,
   productController.deleteProduct.bind(productController)
+);
+
+// order routes
+router.get(
+  "/orders",
+  validatePagination,
+  validateOrderFilters,
+  handleValidationErrors,
+  orderController.getAllOrders.bind(orderController)
+);
+
+router.get(
+  "/orders/:id",
+  validateOrderId,
+  handleValidationErrors,
+  orderController.getOrderById.bind(orderController)
+);
+
+router.post(
+  "/orders",
+  validateCreateOrder,
+  handleValidationErrors,
+  orderController.createOrder.bind(orderController)
+);
+
+router.post(
+  "/orders/:id/cancel",
+  validateOrderId,
+  handleValidationErrors,
+  orderController.cancelOrder.bind(orderController)
 );
 
 export default router;

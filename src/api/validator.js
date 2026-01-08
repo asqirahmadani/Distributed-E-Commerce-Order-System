@@ -1,5 +1,6 @@
 import { body, param, query, validationResult } from "express-validator";
 
+// product validators
 export const validateCreateProduct = [
   body("name")
     .trim()
@@ -41,6 +42,45 @@ export const validateUpdateProduct = [
 
 export const validateProductId = [
   param("id").isUUID().withMessage("Invalid product ID format"),
+];
+
+// order validators
+export const validateCreateOrder = [
+  body("productId")
+    .notEmpty()
+    .withMessage("Product ID is required")
+    .isUUID()
+    .withMessage("Invalid product ID format"),
+
+  body("quantity")
+    .notEmpty()
+    .withMessage("Quantity is required")
+    .isInt({ min: 1 })
+    .withMessage("Quantity must be a positive integer"),
+
+  body("customerEmail")
+    .optional()
+    .isEmail()
+    .withMessage("Must be a valid email address")
+    .normalizeEmail(),
+];
+
+export const validateOrderId = [
+  param("id").isUUID().withMessage("Invalid order ID format"),
+];
+
+export const validateOrderFilters = [
+  query("status")
+    .optional()
+    .isIn(["pending", "completed", "cancelled", "failed"])
+    .withMessage(
+      "Invalid status. Must be: pending, completed, cancelled, or failed"
+    ),
+
+  query("productId")
+    .optional()
+    .isUUID()
+    .withMessage("Invalid product ID format"),
 ];
 
 export const validatePagination = [

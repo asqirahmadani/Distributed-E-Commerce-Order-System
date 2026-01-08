@@ -2,6 +2,9 @@ import productService from "../../services/productService.js";
 import logger from "../../utils/logger.js";
 
 class ProductController {
+  /* 
+  Create a new product
+  */
   async createProduct(req, res, next) {
     const { name, price, stock } = req.body;
 
@@ -20,6 +23,9 @@ class ProductController {
     }
   }
 
+  /* 
+  Get product by ID
+  */
   async getProductById(req, res, next) {
     try {
       const { id } = req.params;
@@ -43,6 +49,9 @@ class ProductController {
     }
   }
 
+  /* 
+  Get all products with pagination
+  */
   async getAllProducts(req, res, next) {
     try {
       const { limit = 50, offset = 0 } = req.query;
@@ -68,6 +77,9 @@ class ProductController {
     }
   }
 
+  /* 
+  Update product
+  */
   async updateProduct(req, res, next) {
     try {
       const { id } = req.params;
@@ -93,6 +105,9 @@ class ProductController {
     }
   }
 
+  /* 
+  Delete product
+  */
   async deleteProduct(req, res, next) {
     try {
       const { id } = req.params;

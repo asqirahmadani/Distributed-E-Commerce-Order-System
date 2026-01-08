@@ -1,30 +1,20 @@
-require("dotenv").config();
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-export const development = {
-  url: process.env.DATABASE_URL,
+import logger from "../utils/logger.js";
+
+dotenv.config();
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
-  logging: false,
+  logging:
+    process.env.NODE_ENV === "development" ? (msg) => logger.debug(msg) : false,
   pool: {
-    max: 5,
+    max: process.env.NODE_ENV === "production" ? 20 : 5,
     min: 0,
     acquire: 30000,
     idle: 10000,
   },
-};
-export const production = {
-  url: process.env.DATABASE_URL,
-  dialect: "postgres",
-  logging: false,
-  pool: {
-    max: 20,
-    min: 5,
-    acquire: 30000,
-    idle: 10000,
-  },
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-};
+});
+
+export default sequelize;
