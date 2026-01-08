@@ -20,6 +20,11 @@ export const validateCreateProduct = [
     .withMessage("Stock is required")
     .isInt({ min: 0 })
     .withMessage("Stock must be a non-negative integer"),
+
+  body("type")
+    .optional()
+    .isIn(["electronic", "food", "fashion", "common"])
+    .withMessage("Invalid product type"),
 ];
 
 export const validateUpdateProduct = [
@@ -81,6 +86,41 @@ export const validateOrderFilters = [
     .optional()
     .isUUID()
     .withMessage("Invalid product ID format"),
+];
+
+// coupon validators
+export const validateCreateCoupon = [
+  body("isActive")
+    .optional()
+    .isBoolean()
+    .withMessage("Invalid isActive. Must be boolean"),
+
+  body("totalDiscount")
+    .notEmpty()
+    .isFloat({ min: 0.01, max: 0.8 })
+    .withMessage(
+      "Price must be a positive number greater than 0 and less than 0.8"
+    ),
+
+  body("productType")
+    .optional()
+    .isIn(["electronic", "food", "fashion", "common"])
+    .withMessage("Invalid product type"),
+
+  body("expiredAt").optional().isDate(),
+];
+export const validateCoupon = [
+  body("token")
+    .notEmpty()
+    .withMessage("Token is required")
+    .isString()
+    .withMessage("Coupon must be a string"),
+
+  body("productId")
+    .isUUID()
+    .withMessage("Invalid product ID format")
+    .notEmpty()
+    .withMessage("productId is required"),
 ];
 
 export const validatePagination = [

@@ -52,6 +52,11 @@ Product.init(
         },
       },
     },
+    type: {
+      type: DataTypes.ENUM(["electronic", "food", "fashion", "common"]),
+      allowNull: false,
+      defaultValue: "common",
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,

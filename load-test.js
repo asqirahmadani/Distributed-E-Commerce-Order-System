@@ -10,7 +10,7 @@ const instance = autocannon(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      productId: "2aa524b2-c6f7-40da-9a57-cd33f2f0e919",
+      productId: "1abf9e20-eda6-4a8b-b919-1169db28b78b",
       quantity: 1,
     }),
   },

@@ -7,11 +7,14 @@ import {
   validateCreateOrder,
   validateOrderId,
   validateOrderFilters,
+  validateCoupon,
+  validateCreateCoupon,
   validatePagination,
   handleValidationErrors,
 } from "./validator.js";
-import orderController from "./controllers/orderController.js";
 import productController from "./controllers/productController.js";
+import couponController from "./controllers/couponController.js";
+import orderController from "./controllers/orderController.js";
 
 const router = express.Router();
 
@@ -80,6 +83,21 @@ router.post(
   validateOrderId,
   handleValidationErrors,
   orderController.cancelOrder.bind(orderController)
+);
+
+// coupon routes
+router.post(
+  "/coupons/validate",
+  validateCoupon,
+  handleValidationErrors,
+  couponController.validateCoupon.bind(couponController)
+);
+
+router.post(
+  "/coupons",
+  validateCreateCoupon,
+  handleValidationErrors,
+  couponController.createCoupon.bind(couponController)
 );
 
 export default router;

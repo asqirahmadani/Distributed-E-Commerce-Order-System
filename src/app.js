@@ -3,7 +3,8 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 
-import errorHandler from "./middleware/errorHandler.js";
+import errorHandler, { notFoundHandler } from "./middleware/errorHandler.js";
+import requestLogging from "./middleware/requestLogger.js";
 import rateLimiter from "./middleware/rateLimiter.js";
 import { sequelize } from "./models/index.js";
 import logger from "./utils/logger.js";
@@ -19,10 +20,13 @@ app.use(compression());
 
 // body parsing middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // rate limiting
-app.use(rateLimiter);
+app.use("/api", rateLimiter);
+
+// request logging
+app.use(requestLogging);
 
 // request logging
 app.use((req, _res, next) => {
@@ -60,9 +64,7 @@ app.get("/health", async (req, res) => {
 app.use("/api", routes);
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found!" });
-});
+app.use(notFoundHandler);
 
 // error handling middleware
 app.use(errorHandler);

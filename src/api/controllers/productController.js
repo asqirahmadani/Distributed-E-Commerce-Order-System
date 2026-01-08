@@ -6,9 +6,14 @@ class ProductController {
   Create a new product
   */
   async createProduct(req, res, next) {
-    const { name, price, stock } = req.body;
+    const { name, price, stock, type = "common" } = req.body;
 
-    const product = await productService.createProduct({ name, price, stock });
+    const product = await productService.createProduct({
+      name,
+      price,
+      stock,
+      type,
+    });
     logger.info(`Product created successfully: ${product.id}`);
 
     res.status(201).json({
