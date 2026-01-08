@@ -1,6 +1,7 @@
 import { Transaction } from "sequelize";
 
 import orderRepository from "../dal/orderRepository.js";
+import celeryClient from "../utils/celeryClient.js";
 import { sequelize } from "../models/index.js";
 import cacheService from "./cacheService.js";
 import logger from "../utils/logger.js";
@@ -82,6 +83,11 @@ class OrderService {
       logger.info(
         `Order created succesfully: ${order.id}, Product: ${productId}, Quantity: ${quantity}, New Stock: ${newStock}`
       );
+
+      // trigger background tasks (non-blocking)
+      this.triggerBackgroundTasks(order, product).catch((error) => {
+        logger.error("Background task trigger failed (non-critical):", error);
+      });
 
       return {
         success: true,
@@ -194,6 +200,56 @@ class OrderService {
         code: "CANCELLATION_FAILED",
         details: error.message,
       };
+    }
+  }
+
+  /* 
+  Trigger background tasks after order creation (async)
+  */
+  async triggerBackgroundTasks(order, product) {
+    try {
+      const orderData = {
+        id: order.id,
+        productId: order.productId,
+        productName: order.productName,
+        quantity: order.quantity,
+        pricePerUnit: parseFloat(order.pricePerUnit),
+        totalPrice: parseFloat(order.totalPrice),
+        status: order.status,
+        customerEmail: order.customerEmail,
+        createdAt: order.createdAt,
+      };
+
+      // process order
+      const processTaskId = await celeryClient.sendTask(
+        "tasks.process_order",
+        [],
+        orderData
+      );
+      logger.info(`Process order task queued: ${processTaskId}`);
+
+      // send notification (if email provided)
+      if (order.customerEmail) {
+        const notifyTaskId = await celeryClient.sendTask(
+          "tasks.send_order_notification",
+          [],
+          orderData
+        );
+        logger.info(`Notification task queued: ${notifyTaskId}`);
+      }
+
+      // update analytics
+      const analyticsTaskId = await celeryClient.sendTask(
+        "tasks.update_inventory_analytics",
+        [],
+        {
+          product_id: product.id,
+          quantity_sold: order.quantity,
+        }
+      );
+      logger.info(`Analytics task queued: ${analyticsTaskId}`);
+    } catch (error) {
+      logger.error("Error triggering background tasks:", error);
     }
   }
 }
